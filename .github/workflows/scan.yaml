@@ -40,9 +40,9 @@ jobs:
         run: docker build -t $IMAGE_NAME .
 
       - name: Container Image Scan
+        if: ${{ false() }} 
         id: scan
         uses: PaloAltoNetworks/prisma-cloud-scan@v1
-        if: ${{ false() }} 
         with:
           pcc_console_url: ${{ vars.PCC_CONSOLE_URL }}
           pcc_user: ${{ secrets.PC_ACCESS_KEY }}
@@ -50,8 +50,8 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
 
       - name: Upload SARIF report
-        uses: actions/upload-artifact@v2
         if: ${{ false() }}
+        uses: actions/upload-artifact@v2
         with:
           name: SARIF results twistcli
           path: ${{ steps.scan.outputs.sarif_file }}
@@ -142,8 +142,8 @@ jobs:
           quiet: true  # only show failed
 
       - name: Upload SARIF report
-        uses: actions/upload-artifact@v2
         if: ${{ false() }}
+        uses: actions/upload-artifact@v2
         with:
           name: SARIF results Checkov
           path: results.sarif
