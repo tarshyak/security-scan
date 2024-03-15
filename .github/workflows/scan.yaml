@@ -33,7 +33,7 @@ jobs:
         env:
           PRISMA_API_URL: https://api.ind.prismacloud.io
         with:
-          api-key: ${{ secrets.BC_API_KEY }}
+          api-key: ${{ secrets.PC_ACCESS_KEY }}::${{ secrets.PC_SECRET_KEY }}
           
       - name: Build the image
         run: docker build -t $IMAGE_NAME .
