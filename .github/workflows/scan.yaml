@@ -140,7 +140,6 @@ jobs:
           quiet: true  # only show failed
 
       - name: Upload SARIF report
-        if: ${{ false() }}
         uses: actions/upload-artifact@v2
         with:
           name: SARIF results Checkov
