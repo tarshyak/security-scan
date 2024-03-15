@@ -34,6 +34,7 @@ jobs:
           PRISMA_API_URL: https://api.ind.prismacloud.io
         with:
           api-key: ${{ secrets.PC_ACCESS_KEY }}::${{ secrets.PC_SECRET_KEY }}
+          use_enforcement_rules: true # optional - use enforcement rule configs from the platform
           
       - name: Build the image
         run: docker build -t $IMAGE_NAME .
