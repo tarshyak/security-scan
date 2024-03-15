@@ -40,7 +40,6 @@ jobs:
         run: docker build -t $IMAGE_NAME .
 
       - name: Container Image Scan
-        if: ${{ false() }} 
         id: scan
         uses: PaloAltoNetworks/prisma-cloud-scan@v1
         with:
@@ -50,7 +49,6 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
 
       - name: Upload SARIF report
-        if: ${{ false() }}
         uses: actions/upload-artifact@v2
         with:
           name: SARIF results twistcli
