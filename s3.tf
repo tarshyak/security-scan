@@ -1,13 +1,22 @@
 provider "aws" {
-  region = "us-east-1" # Choose your AWS region
+  region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "my_bucket" {
-  bucket = "bucket6972" # Ensure this is unique
-  acl    = "public-read-write" # Defines the access control level
+resource "aws_s3_bucket" "vulnerable_bucket" {
+  bucket = "my-vulnerable-s3-bucket"
+  acl    = "public-read"
 
   tags = {
-    Name        = "My Terraform S3 Bucket"
-    Environment = "Dev"
+    Name        = "Vulnerable Bucket"
+    Environment = "Demo"
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "bad_example" {
+  bucket = aws_s3_bucket.vulnerable_bucket.id
+
+  block_public_acls   = false
+  ignore_public_acls  = false
+  block_public_policy = false
+  restrict_public_buckets = false
 }
