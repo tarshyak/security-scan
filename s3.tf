@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "my_bucket" {
-  bucket = "bucket6961" # Ensure this is unique
+  bucket = "bucket6972" # Ensure this is unique
   acl    = "public-read-write" # Defines the access control level
 
   tags = {
