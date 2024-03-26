@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "vulnerable_bucket" {
   bucket = "my-vulnerable-s3-bucket"
-  acl    = "public-read"
+  acl    = "private"
 
   tags = {
     Name        = "Vulnerable Bucket"
