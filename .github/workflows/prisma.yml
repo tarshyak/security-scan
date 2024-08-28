@@ -14,10 +14,14 @@ name: Prisma Cloud IaC Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+        - "main"
+        - "temp"
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches:
+        - "main"
+        - "temp"
   schedule:
     - cron: '25 2 * * 5'
 
