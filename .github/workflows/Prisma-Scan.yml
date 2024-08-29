@@ -64,8 +64,8 @@ jobs:
       security-events: write  # For SARIF
 
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v3
+      - name: Clone repo
+        uses: actions/checkout@v4
 
       - name: Run Bridgecrew Action
         id: Bridgecrew
@@ -75,20 +75,18 @@ jobs:
         with:
           api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
           quiet: true  # only show failed
-          use_enforcement_rules: true # optional - use enforcement rule configs from the platform
-          
-      - name: Upload SARIF report
-        uses: actions/upload-artifact@v2
-        with:
-          name: SARIF results Checkov
-          path: results.sarif
-
+          use_enforcement_rules: false # optional - use enforcement rule configs from the platform
       # Only for public repos or enterprise accounts
       # Uploads results.sarif to GitHub repository using the upload-sarif action
-      - uses: github/codeql-action/upload-sarif@v2
+      - uses: github/codeql-action/upload-sarif@v3
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: results.sarif
+
+      # - name: Upload SARIF report
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     path: results.sarif
 
 
 
