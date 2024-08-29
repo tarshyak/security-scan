@@ -50,6 +50,7 @@ jobs:
           #prisma_api_url: ${{ secrets.PRISMA_CLOUD_API_URL }}
           api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
           quiet: true #only show failed
+          framework: terraform
           # Scan sources on Prisma Cloud are uniquely identified by their name
           # asset_name: 'iac-security'
           # The service need to know the type of IaC being scanned
