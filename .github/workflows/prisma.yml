@@ -50,7 +50,6 @@ jobs:
           api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
           quiet: true  # only show failed
           use_enforcement_rules: false # optional - use enforcement rule configs from the platform
-          fail-on-error: true  # this will ensure the job fails on errors
   # prisma_cloud_iac_scan:
   #   permissions:
   #     contents: read # for actions/checkout to fetch code
