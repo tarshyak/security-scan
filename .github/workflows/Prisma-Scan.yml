@@ -56,6 +56,7 @@ jobs:
           # template_type: 'TF'
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
         with:
           sarif_file: results.sarif
         # Results are generated only on a success or failure
