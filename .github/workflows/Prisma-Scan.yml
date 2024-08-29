@@ -22,12 +22,11 @@ on:
     branches:
         - "main"
         - "prisma"
-        - "tfsec"
   schedule:
     - cron: '25 2 * * 5'
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 jobs:
   # checkov-scan:
@@ -106,7 +105,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - id: iac-scan
-        name: Run Scan on CFT files in the repository
+        name: Run Scan on TF files in the repository
         uses: prisma-cloud-shiftleft/iac-scan-action@53278c231c438216d99b463308a3cbed351ba0c3
         with:
           # You will need Prisma Cloud API Access Token
@@ -115,9 +114,9 @@ jobs:
           access_key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}
           secret_key: ${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
           # Scan sources on Prisma Cloud are uniquely identified by their name
-          asset_name: 'security-scan'
+          asset_name: 'security-scan-iac'
           # The service need to know the type of IaC being scanned
-          template_type: 'CFT'
+          template_type: 'TF'
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         # Results are generated only on a success or failure
