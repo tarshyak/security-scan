@@ -38,28 +38,32 @@ jobs:
     name: Run Prisma Cloud IaC Scan to check
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - id: iac-scan
-        name: Run Scan on TF files in the repository
-        uses: prisma-cloud-shiftleft/iac-scan-action@v1
+        uses: actions/checkout@v4
+      - id: Bridgecrew
+        name: Run Bridgecrew Action
+        uses: bridgecrewio/checkov-action@master
+        env:
+          PRISMA_API_URL: ${{ secrets.PRISMA_CLOUD_API_URL }}
         with:
           # You will need Prisma Cloud API Access Token
           # More details in https://github.com/prisma-cloud-shiftleft/iac-scan-action
-          prisma_api_url: ${{ secrets.PRISMA_CLOUD_API_URL }}
-          access_key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}
-          secret_key: ${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
+          #prisma_api_url: ${{ secrets.PRISMA_CLOUD_API_URL }}
+          api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
+          quiet: true #only show failed
           # Scan sources on Prisma Cloud are uniquely identified by their name
-          asset_name: 'iac-security'
+          # asset_name: 'iac-security'
           # The service need to know the type of IaC being scanned
-          template_type: 'TF'
+          # template_type: 'TF'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@2
+        with:
+          sarif_file: results.sarif
         # Results are generated only on a success or failure
         # this is required since GitHub by default won't run the next step
         # when the previous one has failed.
         # And alternative it to add `continue-on-error: true` to the previous step
-        if: success() || failure()
-        with:
-          # The SARIF Log file name is configurable on scan action
-          # therefore the file name is best read from the steps output
-          sarif_file: ${{ steps.iac-scan.outputs.iac_scan_result_sarif_path }}
+        # if: success() || failure()
+        # with:
+        #   # The SARIF Log file name is configurable on scan action
+        #   # therefore the file name is best read from the steps output
+        #   sarif_file: ${{ steps.iac-scan.outputs.iac_scan_result_sarif_path }}
