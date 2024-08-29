@@ -29,6 +29,31 @@ permissions:
   contents: read
 
 jobs:
+  # checkov-scan:
+  #   name: Scan Repo with checkov
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     security-events: write  # For SARIF
+
+  #   steps:
+  #     - name: Check out the repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Run Bridgecrew Action
+  #       id: Bridgecrew
+  #       uses: bridgecrewio/checkov-action@master
+  #       env:
+  #         PRISMA_API_URL: ${{ secrets.PRISMA_CLOUD_API_URL }}
+  #       with:
+  #         api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
+  #         quiet: true  # only show failed
+  #         use_enforcement_rules: false # optional - use enforcement rule configs from the platform
+
+
+
+
   checkov-scan:
     name: Scan Repo with checkov
     runs-on: ubuntu-latest
@@ -45,11 +70,32 @@ jobs:
         id: Bridgecrew
         uses: bridgecrewio/checkov-action@master
         env:
-          PRISMA_API_URL: ${{ secrets.PRISMA_CLOUD_API_URL }}
+          PRISMA_API_URL: ${{ vars.PRISMA_API_URL }}
         with:
-          api-key: ${{ secrets.PRISMA_CLOUD_ACCESS_KEY }}::${{ secrets.PRISMA_CLOUD_SECRET_KEY }}
+          api-key: ${{ secrets.PC_ACCESS_KEY }}::${{ secrets.PC_SECRET_KEY }}
           quiet: true  # only show failed
-          use_enforcement_rules: false # optional - use enforcement rule configs from the platform
+          use_enforcement_rules: true # optional - use enforcement rule configs from the platform
+          
+      - name: Upload SARIF report
+        uses: actions/upload-artifact@v2
+        with:
+          name: SARIF results Checkov
+          path: results.sarif
+
+      # Only for public repos or enterprise accounts
+      # Uploads results.sarif to GitHub repository using the upload-sarif action
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: results.sarif
+
+
+
+
+
+
+
+          
   # prisma_cloud_iac_scan:
   #   permissions:
   #     contents: read # for actions/checkout to fetch code
@@ -73,14 +119,14 @@ jobs:
   #         asset_name: 'my-asset-name'
   #         # The service need to know the type of IaC being scanned
   #         template_type: 'CFT'
-      # - name: Upload SARIF file
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   # Results are generated only on a success or failure
-      #   # this is required since GitHub by default won't run the next step
-      #   # when the previous one has failed.
-      #   # And alternative it to add `continue-on-error: true` to the previous step
-      #   if: success() || failure()
-      #   with:
-      #     # The SARIF Log file name is configurable on scan action
-      #     # therefore the file name is best read from the steps output
-      #     sarif_file: ${{ steps.iac-scan.outputs.iac_scan_result_sarif_path }}
+  #     - name: Upload SARIF file
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       # Results are generated only on a success or failure
+  #       # this is required since GitHub by default won't run the next step
+  #       # when the previous one has failed.
+  #       # And alternative it to add `continue-on-error: true` to the previous step
+  #       if: success() || failure()
+  #       with:
+  #         # The SARIF Log file name is configurable on scan action
+  #         # therefore the file name is best read from the steps output
+  #         sarif_file: ${{ steps.iac-scan.outputs.iac_scan_result_sarif_path }}
