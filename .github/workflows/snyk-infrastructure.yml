@@ -46,6 +46,7 @@ jobs:
           # or you can signup for free at https://snyk.io/login
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
+            file: s3.tf
             sarif_file: snyk.sarif
         #   # Add the path to the configuration file that you would like to test.
         #   # For example `deployment.yaml` for a Kubernetes deployment manifest
