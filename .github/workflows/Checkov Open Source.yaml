@@ -20,9 +20,8 @@ jobs:
         with:
           file: s3.tf # optional: provide the path for resource to be scanned. This will override the directory if both are provided.
           quiet: true # optional: display only failed checks
-          soft_fail: true # optional: do not return an error code if there are failed checks
+          soft_fail: false # optional: do not return an error code if there are failed checks
           framework: terraform # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
-          continue-on-error: false
       - name: Upload SARIF report
         uses: actions/upload-artifact@v2
         with:
