@@ -1,0 +1,31 @@
+name: Checkov Opensource
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: demo:latest
+
+jobs:
+  checkov-job:
+    runs-on: ubuntu-latest
+    name: checkov-action
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: s3.tf # optional: provide the path for resource to be scanned. This will override the directory if both are provided.
+          quiet: true # optional: display only failed checks
+          soft_fail: true # optional: do not return an error code if there are failed checks
+          framework: terraform # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
+          continue-on-error: false
+      - name: Upload SARIF report
+        uses: actions/upload-artifact@v2
+        with:
+          name: SARIF results Checkov
+          path: results.sarif
+         
