@@ -10,7 +10,7 @@
 # #
 # # For more details on the Action configuration see https://github.com/prisma-cloud-shiftleft/iac-scan-action
 
-# name: Prisma Cloud IaC Scan
+# name: Workflow 3 #Prisma Cloud IaC Scan
 
 # on:
 #   # push:
