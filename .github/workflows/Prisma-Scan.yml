@@ -13,10 +13,6 @@
 # name: Workflow 3 #Prisma Cloud IaC Scan
 
 # on:
-#   # push:
-#   #   branches:
-#   #       - "main"
-#   #       - "prisma"
 #   pull_request:
 #     # The branches below must be a subset of the branches above
 #     branches:
