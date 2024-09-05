@@ -61,6 +61,7 @@ jobs:
         #   file: s3.tf
         #   args: -d
       - name: Upload result to GitHub Code Scanning
+        if: always() # This ensures that the step runs no matter what happens in previous
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
