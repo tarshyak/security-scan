@@ -68,7 +68,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
             file: s3.tf
-            args: --severity-threshold=critical
+            args: --severity-threshold=high
             sarif_file: snyk.sarif
         continue-on-error: false
         #   # Add the path to the configuration file that you would like to test.
