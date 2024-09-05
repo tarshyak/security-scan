@@ -47,7 +47,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
             file: s3.tf
-            args: --severity-threshold=high --sarif-file-output=snyk.sarif
+            args: --sarif-file-output=snyk.sarif #--severity-threshold=high
             #sarif_file: snyk.sarif
         #   # Add the path to the configuration file that you would like to test.
         #   # For example `deployment.yaml` for a Kubernetes deployment manifest
