@@ -2,7 +2,7 @@
 # vars.PRISMA_API_URL
 # secrets.PC_ACCESS_KEY
 # secrets.PC_SECRET_KEY
-name: Prisma Cloud Checks
+name: Cloud Cheks #Prisma Cloud Checks
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
