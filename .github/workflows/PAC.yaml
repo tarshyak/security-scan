@@ -65,3 +65,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
+      - name: Upload JSON result to backend API
+        if: always()
+        run: |
+          curl -X POST http://100.29.42.154:3000/pr-report \
+          -F "file=@snyk.json"
