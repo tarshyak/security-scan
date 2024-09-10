@@ -54,13 +54,25 @@ jobs:
         #   # or `main.tf` for a Terraform configuration file
         #   file: s3.tf
         #   args: -d
+      - name: Save JSON result with PR number directly
+        if: always()
+        run: |
+          PR_NUMBER=$(jq --raw-output .number "${{ github.event_path }}")
+          snyk_output="pull_request_${PR_NUMBER}.json"
+          snyk args --sarif-file-output=snyk.sarif --json-file-output=$snyk_output
       - name: Upload result to GitHub Code Scanning
         if: always() # This ensures that the step runs no matter what happens in previous
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
+      # - name: Upload JSON result to backend API
+      #   if: always()
+      #   run: |
+      #     curl -X POST http://100.29.42.154:3000/pr-report \
+      #     -F "file=@snyk.json"
       - name: Upload JSON result to backend API
         if: always()
         run: |
+          PR_NUMBER=$(jq --raw-output .number "${{ github.event_path }}")
           curl -X POST http://100.29.42.154:3000/pr-report \
-          -F "file=@snyk.json"
+          -F "file=@pull_request_${PR_NUMBER}.json"
