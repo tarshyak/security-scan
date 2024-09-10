@@ -35,6 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Extract PR Number
+        if: github.event_name == 'pull_request'
+        run: echo "PR_NUMBER=$(jq --raw-output .number "${{ github.event_path }}")" >> $GITHUB_ENV
+
       - name: Run Snyk to check configuration files for security issues
         # Snyk can be used to break the build when it detects security issues.
         # In this case we want to upload the issues to GitHub Code Scanning
@@ -47,7 +52,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
             file: s3.tf
-            args: --sarif-file-output=snyk.sarif --json-file-output=snyk.json #--severity-threshold=high
+            args: --sarif-file-output=snyk.sarif --json-file-output=pull_request_${{ env.PR_NUMBER }}.json #--severity-threshold=high
             #sarif_file: snyk.sarif
         #   # Add the path to the configuration file that you would like to test.
         #   # For example `deployment.yaml` for a Kubernetes deployment manifest
@@ -65,14 +70,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
-      # - name: Upload JSON result to backend API
-      #   if: always()
-      #   run: |
-      #     curl -X POST http://100.29.42.154:3000/pr-report \
-      #     -F "file=@snyk.json"
       - name: Upload JSON result to backend API
         if: always()
         run: |
-          PR_NUMBER=$(jq --raw-output .number "${{ github.event_path }}")
           curl -X POST http://100.29.42.154:3000/pr-report \
-          -F "file=@pull_request_${PR_NUMBER}.json"
+          -F "file=@pull_request_${{ env.PR_NUMBER }}.json"
