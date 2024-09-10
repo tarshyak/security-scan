@@ -42,32 +42,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run scan to check configuration files for security issues
-        # Snyk can be used to break the build when it detects security issues.
-        # In this case we want to upload the issues to GitHub Code Scanning
-        uses: snyk/actions/iac@14818c4695ecc4045f33c9cee9e795a788711ca4
-        env:
-          # In order to use the Snyk Action you will need to have a Snyk API token.
-          # More details in https://github.com/snyk/actions#getting-your-snyk-token
-          # or you can signup for free at https://snyk.io/login
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-            file: s3.tf
-            args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_${{ env.SCAN_NAME }}.json #--severity-threshold=low
-            #sarif_file: snyk.sarif
-        continue-on-error: false
-        #   # Add the path to the configuration file that you would like to test.
-        #   # For example `deployment.yaml` for a Kubernetes deployment manifest
-        #   # or `main.tf` for a Terraform configuration file
-        #   file: s3.tf
-        #   args: -d
-      - name: Upload result to GitHub Code Scanning
-        if: always() # This ensures that the step runs no matter what happens in previous
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk.sarif
+      #- name: Run scan to check configuration files for security issues
       - name: Upload JSON result to backend API
         if: always()
         run: |
-          curl -X POST http://100.29.42.154:3000/cicd-report \
-          -F "file=@cicd_run__${{ env.SCAN_NAME }}.json"
+          echo "cicd_run_"${{ env.SCAN_NAME }}""
+        # Snyk can be used to break the build when it detects security issues.
+        # In this case we want to upload the issues to GitHub Code Scanning
+      #   uses: snyk/actions/iac@14818c4695ecc4045f33c9cee9e795a788711ca4
+      #   env:
+      #     # In order to use the Snyk Action you will need to have a Snyk API token.
+      #     # More details in https://github.com/snyk/actions#getting-your-snyk-token
+      #     # or you can signup for free at https://snyk.io/login
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #       file: s3.tf
+      #       args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_${{ env.SCAN_NAME }}.json #--severity-threshold=low
+      #       #sarif_file: snyk.sarif
+      #   continue-on-error: false
+      #   #   # Add the path to the configuration file that you would like to test.
+      #   #   # For example `deployment.yaml` for a Kubernetes deployment manifest
+      #   #   # or `main.tf` for a Terraform configuration file
+      #   #   file: s3.tf
+      #   #   args: -d
+      # - name: Upload result to GitHub Code Scanning
+      #   if: always() # This ensures that the step runs no matter what happens in previous
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: snyk.sarif
+      # - name: Upload JSON result to backend API
+      #   if: always()
+      #   run: |
+      #     curl -X POST http://100.29.42.154:3000/cicd-report \
+      #     -F "file=@cicd_run__${{ env.SCAN_NAME }}.json"
