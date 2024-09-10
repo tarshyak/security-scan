@@ -68,5 +68,5 @@ jobs:
       - name: Upload JSON result to backend API
         if: always()
         run: |
-          curl -X POST http://100.29.42.154:3000/pr-report \
+          curl -X POST http://100.29.42.154:3000/cicd-report \
           -F "file=@snyk.json"
