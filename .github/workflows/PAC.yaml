@@ -57,7 +57,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
             file: s3.tf
-            args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_"${{ env.SCAN_NAME }}".json #--severity-threshold=low
+            args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_${{ env.SCAN_NAME }}.json #--severity-threshold=low
             #sarif_file: snyk.sarif
         continue-on-error: false
         #   # Add the path to the configuration file that you would like to test.
@@ -74,4 +74,4 @@ jobs:
         if: always()
         run: |
           curl -X POST http://100.29.42.154:3000/cicd-report \
-          -F "file=@cicd_run__${{ env.SCAN_NAME }}.json"
+          -F "file=@cicd_run_${{ env.SCAN_NAME }}.json"
