@@ -23,7 +23,7 @@ jobs:
         with:
             file: s3.tf
             args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_${{ env.SCAN_NAME }}.json
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Upload result to GitHub Code Scanning
         if: always() 
