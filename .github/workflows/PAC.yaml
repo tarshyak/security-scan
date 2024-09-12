@@ -73,5 +73,21 @@ jobs:
       - name: Upload JSON result to backend API
         if: always()
         run: |
-          curl -X POST http://100.29.42.154:3000/cicd-report \
+          curl -X POST http://54.165.154.63:3000/cicd-report \
           -F "file=@cicd_run_${{ env.SCAN_NAME }}.json"
+      - name: Capture scan result status
+        if: always()  # Ensures this step runs regardless of success or failure
+        id: scan_result
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "status=success" >> $GITHUB_ENV
+          else
+            echo "status=failure" >> $GITHUB_ENV
+          fi
+      - name: Upload JSON result and scan status to backend API
+        if: always()  # This will ensure it runs no matter what
+        run: |
+          curl -X POST http://54.165.154.63:3000/cicd-status \
+          -H "Content-Type: application/json" \
+          -d '{"status": "${{env.status}}"}'  # or failure based on condition
+
