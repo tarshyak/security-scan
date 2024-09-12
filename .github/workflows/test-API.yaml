@@ -23,7 +23,7 @@ jobs:
         with:
             file: s3.tf
             args: --sarif-file-output=snyk.sarif --json-file-output=cicd_run_${{ env.SCAN_NAME }}.json
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload result to GitHub Code Scanning
         if: always() 
@@ -41,3 +41,9 @@ jobs:
           else
             echo "status=failure" >> $GITHUB_ENV
           fi
+      - name: Upload JSON result and scan status to backend API
+        if: always()  # This will ensure it runs no matter what
+        run: |
+          curl -X POST http://54.165.154.63/cicd-status \
+          -H "Content-Type: application/json" \
+          -d '{"status": "${{ env.status }}"}'  # or failure based on condition
