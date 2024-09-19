@@ -17,7 +17,8 @@ provider "aws" {
 
 resource "aws_vpc" "asoc_prod_vpc_aps1" {
   cidr_block = "10.10.0.0/16"
-    tags = {
+
+  tags = {
     Name = "asoc_prod_vpc_aps1"
   }
 }
@@ -31,12 +32,6 @@ resource "aws_internet_gateway" "asoc_prod_vpc_aps1_igw" {
     Name = "asoc_prod_vpc_aps1_igw"
   }
 }
-
-resource "aws_internet_gateway_attachment" "asoc_prod_vpc_aps1_igw_attachment" {
-  internet_gateway_id = aws_internet_gateway.asoc_prod_vpc_aps1_igw.id
-  vpc_id              = aws_vpc.asoc_prod_vpc_aps1.id
-}
-
 
 # Subnets
 
@@ -136,12 +131,6 @@ resource "aws_eip" "asoc_prod_vpc_aps1_nat_gw_az01_eip" {
   vpc = true
 }
 
-# Activate the below code when a second NAT Gateway is needed for improving the reilency
-
-# resource "aws_eip" "asoc_prod_vpc_aps1_nat_gw_az02_eip" {
-#  vpc = true
-# }
-
 # NAT Gateway
 
 resource "aws_nat_gateway" "asoc_prod_vpc_aps1_nat_gw_az01" {
@@ -155,30 +144,14 @@ resource "aws_nat_gateway" "asoc_prod_vpc_aps1_nat_gw_az01" {
   depends_on = [aws_internet_gateway.asoc_prod_vpc_aps1_igw]
 }
 
-# Activate Second AZ NAT Gateway for resilency 
-# Depeds on EIP Section
-# If Activated, modify the AZ2 Private subnets Routing rules to redirect the traffic to AZ2 NAT Gateway.
-
-# resource "aws_nat_gateway" "asoc_prod_vpc_aps1_nat_gw_az02" {
-#  allocation_id = aws_eip.asoc_prod_vpc_aps1_nat_gw_az02_eip.id
-#  subnet_id     = aws_subnet.asoc_prod_vpc_gw_az2_pub_sn04.id
-#
-#  tags = {
-#    Name = "asoc_prod_vpc_aps1_nat_gw_az02"
-#  }
-#
-#  depends_on = [aws_internet_gateway.asoc_prod_vpc_aps1_igw]
-#}
-
-
 # Route Tables
 
 resource "aws_route_table" "asoc_prod_vpc_igw_rt" {
-  vpc_id = aws_vpc.asoc_prod_vpc_igw_rt.id
+  vpc_id = aws_vpc.asoc_prod_vpc_aps1.id
 
   route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.asoc_prod_vpc_aps1_igw.id
   }
 
   tags = {
@@ -186,72 +159,9 @@ resource "aws_route_table" "asoc_prod_vpc_igw_rt" {
   }
 }
 
-
-resource "aws_route_table" "asoc_prod_vpc_fw_rt_az1" {
-  vpc_id = aws_vpc.asoc_prod_vpc_fw_rt_az1.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_fw_rt_az1"
-  }
-}
-
-
-
-resource "aws_route_table" "asoc_prod_vpc_fw_rt_az2" {
-  vpc_id = aws_vpc.asoc_prod_vpc_fw_rt_az2.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_fw_rt_az2"
-  }
-}
-
-
-resource "aws_route_table" "asoc_prod_vpc_gw_rt_az1" {
-  vpc_id = aws_vpc.asoc_prod_vpc_gw_rt_az1.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_gw_rt_az1"
-  }
-}
-
-
-resource "aws_route_table" "asoc_prod_vpc_gw_rt_az2" {
-  vpc_id = aws_vpc.asoc_prod_vpc_gw_rt_az2.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_gw_rt_az2"
-  }
-}
-
-
 resource "aws_route_table" "asoc_prod_vpc_app_rt_az1" {
-  vpc_id = aws_vpc.asoc_prod_vpc_app_rt_az1.id
+  vpc_id = aws_vpc.asoc_prod_vpc_aps1.id
 
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
@@ -262,15 +172,9 @@ resource "aws_route_table" "asoc_prod_vpc_app_rt_az1" {
   }
 }
 
-
 resource "aws_route_table" "asoc_prod_vpc_app_rt_az2" {
-  vpc_id = aws_vpc.asoc_prod_vpc_app_rt_az2.id
+  vpc_id = aws_vpc.asoc_prod_vpc_aps1.id
 
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
@@ -281,83 +185,7 @@ resource "aws_route_table" "asoc_prod_vpc_app_rt_az2" {
   }
 }
 
-
-resource "aws_route_table" "asoc_prod_vpc_wl_rt_az1" {
-  vpc_id = aws_vpc.asoc_prod_vpc_wl_rt_az1.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_wl_rt_az1"
-  }
-}
-
-
-resource "aws_route_table" "asoc_prod_vpc_wl_rt_az2" {
-  vpc_id = aws_vpc.asoc_prod_vpc_wl_rt_az2.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_wl_rt_az2"
-  }
-}
-
-
-resource "aws_route_table" "asoc_prod_vpc_as_rt_az1" {
-  vpc_id = aws_vpc.asoc_prod_vpc_as_rt_az1.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_as_rt_az1"
-  }
-}
-
-
-resource "aws_route_table" "asoc_prod_vpc_as_rt_az2" {
-  vpc_id = aws_vpc.asoc_prod_vpc_as_rt_az2.id
-
-  route {
-    cidr_block = "10.10.0.0/16"
-    gateway_id = "local"
-  }
-  
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.asoc_prod_vpc_aps1_nat_gw_az01.id
-  }
-
-  tags = {
-    Name = "asoc_prod_vpc_as_rt_az2"
-  }
-}
-
-# Route Table Association
+# Route Table Associations
 
 resource "aws_route_table_association" "igw_rt_association" {
   gateway_id     = aws_internet_gateway.asoc_prod_vpc_aps1_igw.id
@@ -366,22 +194,22 @@ resource "aws_route_table_association" "igw_rt_association" {
 
 resource "aws_route_table_association" "sn01_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_fw_az1_pub_sn01.id
-  route_table_id = aws_route_table.asoc_prod_vpc_fw_rt_az1.id
+  route_table_id = aws_route_table.asoc_prod_vpc_igw_rt.id
 }
 
 resource "aws_route_table_association" "sn02_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_fw_az2_pub_sn02.id
-  route_table_id = aws_route_table.asoc_prod_vpc_fw_rt_az2.id
+  route_table_id = aws_route_table.asoc_prod_vpc_igw_rt.id
 }
 
 resource "aws_route_table_association" "sn03_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_gw_az1_pub_sn03.id
-  route_table_id = aws_route_table.asoc_prod_vpc_gw_rt_az1.id
+  route_table_id = aws_route_table.asoc_prod_vpc_igw_rt.id
 }
 
 resource "aws_route_table_association" "sn04_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_gw_az2_pub_sn04.id
-  route_table_id = aws_route_table.asoc_prod_vpc_gw_rt_az2.id
+  route_table_id = aws_route_table.asoc_prod_vpc_igw_rt.id
 }
 
 resource "aws_route_table_association" "sn05_rt_association" {
@@ -396,21 +224,20 @@ resource "aws_route_table_association" "sn06_rt_association" {
 
 resource "aws_route_table_association" "sn07_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_wl_az1_prv_sn07.id
-  route_table_id = aws_route_table.asoc_prod_vpc_wl_rt_az1.id
+  route_table_id = aws_route_table.asoc_prod_vpc_app_rt_az1.id
 }
 
 resource "aws_route_table_association" "sn08_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_wl_az2_prv_sn08.id
-  route_table_id = aws_route_table.asoc_prod_vpc_wl_rt_az2.id
+  route_table_id = aws_route_table.asoc_prod_vpc_app_rt_az2.id
 }
 
 resource "aws_route_table_association" "sn09_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_as_az1_prv_sn09.id
-  route_table_id = aws_route_table.asoc_prod_vpc_as_rt_az1.id
+  route_table_id = aws_route_table.asoc_prod_vpc_app_rt_az1.id
 }
 
 resource "aws_route_table_association" "sn10_rt_association" {
   subnet_id      = aws_subnet.asoc_prod_vpc_as_az2_prv_sn10.id
-  route_table_id = aws_route_table.asoc_prod_vpc_as_rt_az2.id
+  route_table_id = aws_route_table.asoc_prod_vpc_app_rt_az2.id
 }
-
