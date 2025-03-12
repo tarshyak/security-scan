@@ -9,7 +9,7 @@ variables:
   - name: ECR_PUBLIC_REPO
     value: 'public.ecr.aws/w2y7d4d8/adhoc-scanner'  # Your public AWS ECR repo 
   - name: IMAGE_TAG
-    value: 'latest'
+    value: '1.0'
   - name: REPORTS_DIR
     value: '$(Build.SourcesDirectory)/reports'  # Define reports directory
 
