@@ -1,21 +1,57 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
-- main
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-- task: MicrosoftSecurityDevOps@1
-  displayName: 'Microsoft Security DevOps'
+variables:
+  - group: GitHubSecrets  # Use variables from Azure DevOps Library
+  - name: AWS_REGION
+    value: 'us-east-1'  # Change if needed
+  - name: ECR_PUBLIC_REPO
+    value: 'public.ecr.aws/w2y7d4d8/adhoc-scanner'  # Your public AWS ECR repo 
+  - name: IMAGE_TAG
+    value: 'latest'
+  - name: REPORTS_DIR
+    value: '$(Build.SourcesDirectory)/reports'  # Define reports directory
 
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'
+steps:
+  - script: |
+      docker pull $(ECR_PUBLIC_REPO):$(IMAGE_TAG)
+    displayName: 'Pull Public Image from AWS ECR'
+
+  - script: |
+      git config --global --add safe.directory /app
+    displayName: 'Mark /app as Safe for Git'
+
+  - script: |
+      docker run --rm -v $(Build.SourcesDirectory):/app $(ECR_PUBLIC_REPO):$(IMAGE_TAG)
+    displayName: 'Run Container'
+
+  - script: |
+      echo "Checking if the reports folder exists..."
+      if [ -d "$(REPORTS_DIR)" ] && [ "$(ls -A $(REPORTS_DIR))" ]; then
+        echo "Reports found. Preparing to push to GitHub."
+      else
+        echo "No reports generated. Skipping GitHub push."
+        exit 0
+      fi
+    displayName: 'Verify Reports Folder'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      git config --global user.email "tarshyak@gmail.com" 
+      git config --global user.name "tarshyak" 
+
+      # Set remote URL with GitHub credentials from variable group
+      git remote set-url origin https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@github.com/tarshyak/security-scan.git  
+
+      # Ensure we're on the main branch
+      git checkout main || git checkout -b main
+      git pull origin main  # Sync with the latest remote changes
+
+      # Add and commit changes
+      git add reports/*
+      git commit -m "Adding generated reports from pipeline run" || echo "No changes to commit"
+
+      # Push changes to GitHub
+      git push origin main
+    displayName: 'Push Reports to GitHub'
