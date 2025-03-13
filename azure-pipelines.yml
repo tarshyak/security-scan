@@ -7,9 +7,9 @@ variables:
   - name: AWS_REGION
     value: 'us-east-1'  # Change if needed
   - name: ECR_PUBLIC_REPO
-    value: 'public.ecr.aws/w2y7d4d8/adhoc-scanner'  # Your public AWS ECR repo 
+    value: 'public.ecr.aws/w2y7d4d8/adhoc'  # Your public AWS ECR repo 
   - name: IMAGE_TAG
-    value: '1.0'
+    value: 'latest'
   - name: REPORTS_DIR
     value: '$(Build.SourcesDirectory)/reports'  # Define reports directory
 
