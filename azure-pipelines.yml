@@ -9,7 +9,7 @@ variables:
   - name: ECR_PUBLIC_REPO
     value: 'public.ecr.aws/w2y7d4d8/adhoc'  # Your public AWS ECR repo 
   - name: IMAGE_TAG
-    value: 'latest'
+    value: '1.0'
   - name: REPORTS_DIR
     value: '$(Build.SourcesDirectory)/reports'  # Define reports directory
 
@@ -26,7 +26,7 @@ steps:
 
   - script: |
       docker run --rm -v $(Build.SourcesDirectory):/app $(ECR_PUBLIC_REPO):$(IMAGE_TAG)
-    displayName: 'Run Container'
+    displayName: 'Run Scans'
 
   - script: |
       echo "Checking if the reports folder exists..."
