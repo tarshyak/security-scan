@@ -3,7 +3,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - group: GitHubSecrets  # Use variables from Azure DevOps Library
+  - group: Test #GitHubSecrets  # Use variables from Azure DevOps Library
   - name: AWS_REGION
     value: 'us-east-1'  # Change if needed
   - name: ECR_PUBLIC_REPO
